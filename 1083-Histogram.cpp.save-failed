@@ -1,0 +1,107 @@
+/*------------------------------------************************************************---------------------------*/
+//************************************   Author      : ABDUL MUTALAB SHAYKAT
+//************************************   University  : AIUB
+//************************************   E-mail      : SHAYKAT2057@GMAIL.COM
+//************************************   Problem ID  :
+//************************************   Problem Name:
+//************************************   Algorithm   :
+/*------------------------------------************************************************---------------------------*/
+
+#include<bits/stdc++.h>
+using namespace std;
+
+#define S  30010
+#define cnd tr[idx]
+#define lnd tr[idx*2]
+#define rnd tr[idx*2 + 1]
+#define leftcl idx*2,st,mid
+#define rightcl idx*2 + 1,mid+1,ed
+#define inf 1000000000
+
+// input output
+#define pf              printf
+#define sf(n)           scanf("%d", &n)
+#define sfl(n)          scanf("%lld", &n)
+#define sfc(n)          scanf("%c", &n)
+#define sff(a,b)        scanf("%d %d", &a, &b)
+#define sfff(a,b,c)     scanf("%d %d %d", &a, &b, &c)
+#define INP             freopen("in.txt", "r", stdin);  // file input
+#define OUT             freopen("out.txt", "w", stdout);  // file output
+#define EL              cout << endl
+
+//Test Case:
+#define PC(C,R)         printf("Case %d: %d",C,R);
+
+struct node{
+    int pos;
+    int minv;
+}tr[5*S];
+
+int T,n,d,p;
+int arr[S];
+
+int solve(int s, int e);
+void init(int idx,int st,int ed){
+    if(st == ed){
+        cnd.pos = st;
+        cnd.minv = arr[st];
+        return;
+    }
+    int mid = (st+ed)/2;
+
+    init(leftcl);
+    init(rightcl);
+    cnd.minv = min(lnd.minv,rnd.minv);
+    if(cnd.minv == lnd.minv) cnd.pos = lnd.pos;
+    else cnd.pos = rnd.pos;
+}
+int query_min(int idx,int st,int ed,int i,int j){
+    if(i > ed || j < st){
+        return inf;
+    }
+    if(st >= i && ed <= j){
+        p = cnd.pos;
+        //cout << "st: " << st << " ed: " << ed << "  P: " << p << endl;
+        return cnd.minv;
+    }
+    int mid = (st+ed)/2;
+    int a = query_min(leftcl,i,j);
+    int b = query_min(rightcl,i,j);
+    return min(a,b);
+}
+
+int solve(int s, int e){
+    //cout << s << " " << e << endl;
+    int res,resl = 0,resr = 0,ps;
+    //if(s < 0 || e > n) return 0;
+    if(s > e) return arr[s];
+
+    int mid = query_min(1,1,n,s,e);
+    ps = p;
+    cout << "mid: " << mid << " s: " << s << " " << " e: " << e << " " << " p: " << p  << " mid: " << mid << endl;
+    res = (e-s+1)*mid;
+    resl = solve(s,p-1);
+    resr = solve(p+1,e);
+
+    res = max(res,resl);
+    return res = max(res,resr);
+
+}
+
+int main(){
+    int minv = inf,diff;
+    scanf("%d",&T);
+    for(int i =1; i <= T; i++){
+        memset(arr,0,sizeof(arr));
+        sf(n);
+        for(int j = 1; j <= n; j++){
+            sf(arr[j]);
+        }
+        init(1,1,n);
+
+        int res = solve(1,n);
+        PC(i,res);
+
+    }
+    return 0;
+}
